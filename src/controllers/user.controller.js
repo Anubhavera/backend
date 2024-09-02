@@ -1,10 +1,13 @@
-// import { response } from "express";
+import { response } from "express";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-const registerUser = asyncHandler( async(req,res)=>{
-  res.status(200).json({
-    message:"Anubhav Hooda"
-  })
-})
+const registerUser = asyncHandler(async (req, res) => {
+  // get user details from frontend 
+  //check if user already exists 
+  //check for images and avatars 
+  //create user object
 
-export {registerUser}
+  
+});
+
+export { registerUser };
