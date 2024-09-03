@@ -12,25 +12,29 @@ import fs from 'fs'
       try{
         if(!localFilePath)return null;
         const response = await cloudinary.uploader.upload(localFilePath,{resource_type :"auto"})
-        console.log("file is uploaded on cloudinary", response.url);
+        // console.log("file is uploaded on cloudinary", response.url);
+        fs.unlinkSync(localFilePath)
         return response;
+
       } catch(error){
         fs.unlinkSync(localFilePath)//remove the locally saved temp file as the 
         //upload operation got failed 
         return null;
       }
     }
-// Upload an image
-     const uploadResult = await cloudinary.uploader
-       .upload(
-           'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg', {
-               public_id: 'shoes',
-           }
-       )
-       .catch((error) => {
-        fs.unlinkSync(localFilePath) 
-           console.log(error);
+  export {uploadOnCLoudinary}
 
-       });
+// Upload an image
+    //  const uploadResult = await cloudinary.uploader
+    //    .upload(
+    //        'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg', {
+    //            public_id: 'shoes',
+    //        }
+    //    )
+    //    .catch((error) => {
+    //     fs.unlinkSync(localFilePath) 
+    //        console.log(error);
+
+    //    });
     
-    console.log(uploadResult);
+    // console.log(uploadResult);
