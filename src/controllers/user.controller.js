@@ -5,6 +5,7 @@ import { uploadOnCLoudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.models.js";
 import jwt, { decode } from 'jsonwebtoken'
+import { response } from "express";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -193,4 +194,63 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
   }
 })
 
-export { registerUser, loginUser, logoutUser };
+const changeCurrentPassword = asyncHandler(async(req,res)=>{
+  const{oldPassword, newPassword, confPassword} = req.body
+  // if (!(confPassword === newPassword)) {
+  //   res.status(200).json(new ApiResponse(300,{}, "New Password cannot be confirmed by conf Password status bar "))
+  // }
+  const user = await User.findById(req.user?._id)
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+  if(!isPasswordCorrect){
+    throw new ApiError(400, "Invalid Old Password ")
+  }
+
+  user.password = newPassword
+  await user.save({validateBeforeSave : false})
+
+  return res.status(200).json(new ApiResponse(200,{},"Password Changed Successfully"
+  ))
+
+  const getCurrentUser = asyncHandler(async(req,res)=>{
+    return res.status(200).json(200, req.user, "Current User Fetched Successfully")
+  })
+})
+
+const updateAccountDetails = asyncHandler(async(req,res)=> {
+  const {fullName, email} = req.body
+  if(!fullName || !email){
+    throw new ApiError(400, "All fields are required")
+  }
+  const user = User.findByIdAndUpdate(
+  req.user?._id, 
+  {
+    $set:{
+      fullName, 
+      email:email, 
+    }
+  },
+  {new : true}
+  ).select("-password")
+return res.status(200).json(new ApiResponse(200, user, "Account Details updated Successfully"))
+})
+
+const updateUserAvatar = asyncHandler(async(req,res)=>{
+  const avatarLocalPath = req.file?.path
+
+  if(!avatarLocalPath){
+    throw new ApiError(400, "Avatar file missing")
+
+  }
+  const avatar = await
+})
+
+export { 
+  registerUser,
+  loginUser,
+  logoutUser, 
+  changeCurrentPassword, 
+  getCurrentUser, 
+  refreshAccessToken, 
+  updateAccountDetails
+ };
